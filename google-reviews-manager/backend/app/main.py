@@ -1,9 +1,16 @@
 """Main FastAPI application."""
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import auth
+from app.routers import auth, locations, templates, replies
 from app.models.database import init_db
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO if settings.DEBUG else logging.WARNING,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # Initialize database
 init_db()
@@ -25,6 +32,9 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router)
+app.include_router(locations.router)
+app.include_router(templates.router)
+app.include_router(replies.router)
 
 @app.get("/health")
 async def health_check():

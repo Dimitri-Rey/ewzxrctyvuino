@@ -6,21 +6,19 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: google-reviews-backend
-    ports:
-      - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///./reviews.db
-      - ENVIRONMENT=development
-      - DEBUG=True
+      - DATABASE_URL=sqlite:///./data/reviews.db
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DEBUG=${DEBUG:-False}
       - HOST=0.0.0.0
       - PORT=8000
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
-      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8000/auth/callback}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8080/auth/callback}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080,http://localhost:3000}
     env_file:
       - .env
     volumes:
-      - ./backend/app:/app/app
       - backend_data:/app/data
     restart: unless-stopped
     healthcheck:
@@ -29,6 +27,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    networks:
+      - reviews-network
 
   frontend:
     build:
@@ -36,10 +36,18 @@ services:
       dockerfile: Dockerfile
     container_name: google-reviews-frontend
     ports:
-      - "8080:80"
+      - "${FRONTEND_PORT:-8080}:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - reviews-network
+
+networks:
+  reviews-network:
+    driver: bridge
 
 volumes:
   backend_data:
+    driver: local

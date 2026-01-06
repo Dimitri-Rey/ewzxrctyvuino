@@ -7,20 +7,230 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Google Reviews Manager</h1>
-            <p class="subtitle">Outil d'assistance pour la gestion des avis Google</p>
-        </header>
-        
-        <main>
-            <div class="status-card">
-                <div class="status-indicator" id="statusIndicator"></div>
-                <p id="statusText">Vérification de la connexion...</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>📋 Reviews Manager</h1>
             </div>
-        </main>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" data-section="dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="#" data-section="accounts" class="nav-link">Comptes</a></li>
+                <li><a href="#" data-section="locations" class="nav-link">Établissements</a></li>
+                <li><a href="#" data-section="reviews" class="nav-link">Avis</a></li>
+                <li><a href="#" data-section="templates" class="nav-link">Templates</a></li>
+                <li><a href="#" data-section="pending" class="nav-link">Réponses en attente</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle">☰</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="section-header">
+                <h2>Dashboard</h2>
+                <div class="status-indicator" id="statusIndicator"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-content">
+                        <h3 id="accountsCount">0</h3>
+                        <p>Comptes connectés</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📍</div>
+                    <div class="stat-content">
+                        <h3 id="locationsCount">0</h3>
+                        <p>Établissements</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <h3 id="reviewsCount">0</h3>
+                        <p>Avis au total</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-content">
+                        <h3 id="pendingCount">0</h3>
+                        <p>Réponses en attente</p>
+                    </div>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="app.connectAccount()">
+                    🔗 Connecter un compte Google
+                </button>
+                <button class="btn btn-secondary" onclick="app.refreshAll()">
+                    🔄 Actualiser les données
+                </button>
+            </div>
+        </section>
+
+        <!-- Accounts Section -->
+        <section id="accounts" class="section">
+            <div class="section-header">
+                <h2>Comptes Google</h2>
+                <button class="btn btn-primary" onclick="app.connectAccount()">
+                    + Connecter un compte
+                </button>
+            </div>
+            <div id="accountsList" class="cards-container">
+                <div class="loading">Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Locations Section -->
+        <section id="locations" class="section">
+            <div class="section-header">
+                <h2>Établissements</h2>
+                <div class="filter-group">
+                    <select id="locationAccountFilter" class="filter-select">
+                        <option value="">Tous les comptes</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="app.syncAllLocations()">
+                        🔄 Synchroniser
+                    </button>
+                </div>
+            </div>
+            <div id="locationsList" class="cards-container">
+                <div class="loading">Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews" class="section">
+            <div class="section-header">
+                <h2>Avis</h2>
+                <div class="filter-group">
+                    <select id="reviewLocationFilter" class="filter-select">
+                        <option value="">Tous les établissements</option>
+                    </select>
+                    <select id="reviewRatingFilter" class="filter-select">
+                        <option value="">Toutes les notes</option>
+                        <option value="5">5 étoiles</option>
+                        <option value="4">4 étoiles</option>
+                        <option value="3">3 étoiles</option>
+                        <option value="2">2 étoiles</option>
+                        <option value="1">1 étoile</option>
+                    </select>
+                    <select id="reviewReplyFilter" class="filter-select">
+                        <option value="">Tous</option>
+                        <option value="replied">Avec réponse</option>
+                        <option value="no-reply">Sans réponse</option>
+                    </select>
+                </div>
+            </div>
+            <div id="reviewsList" class="cards-container">
+                <div class="loading">Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Templates Section -->
+        <section id="templates" class="section">
+            <div class="section-header">
+                <h2>Templates de réponses</h2>
+                <button class="btn btn-primary" onclick="app.showTemplateModal()">
+                    + Nouveau template
+                </button>
+            </div>
+            <div id="templatesList" class="cards-container">
+                <div class="loading">Chargement...</div>
+            </div>
+        </section>
+
+        <!-- Pending Replies Section -->
+        <section id="pending" class="section">
+            <div class="section-header">
+                <h2>Réponses en attente</h2>
+                <button class="btn btn-secondary" onclick="app.loadPendingReplies()">
+                    🔄 Actualiser
+                </button>
+            </div>
+            <div id="pendingList" class="cards-container">
+                <div class="loading">Chargement...</div>
+            </div>
+        </section>
     </div>
-    
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Template Modal -->
+    <div id="templateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="templateModalTitle">Nouveau template</h3>
+                <button class="modal-close" onclick="app.closeTemplateModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="templateForm">
+                    <input type="hidden" id="templateId">
+                    <div class="form-group">
+                        <label>Nom du template</label>
+                        <input type="text" id="templateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenu (variables: {author_name}, {location_name}, {rating})</label>
+                        <textarea id="templateContent" rows="8" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Note minimum</label>
+                            <input type="number" id="templateRatingMin" min="1" max="5" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Note maximum</label>
+                            <input type="number" id="templateRatingMax" min="1" max="5" value="5" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="templateActive" checked> Actif
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="app.closeTemplateModal()">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reply Preview Modal -->
+    <div id="replyPreviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Prévisualisation de la réponse</h3>
+                <button class="modal-close" onclick="app.closeReplyPreviewModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="review-preview">
+                    <div class="review-header">
+                        <strong id="previewAuthorName"></strong>
+                        <span class="rating-badge" id="previewRating"></span>
+                    </div>
+                    <p id="previewComment" class="review-comment"></p>
+                </div>
+                <div class="form-group">
+                    <label>Réponse suggérée</label>
+                    <textarea id="previewReplyText" rows="6"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="app.closeReplyPreviewModal()">Fermer</button>
+                    <button type="button" class="btn btn-primary" onclick="app.approvePendingReply()">Approuver et envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
