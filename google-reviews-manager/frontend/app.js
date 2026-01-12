@@ -738,3 +738,5 @@ document.addEventListener('DOMContentLoaded', () => {
         replyFilter.addEventListener('change', () => app.filterReviews());
     }
 });
+
+

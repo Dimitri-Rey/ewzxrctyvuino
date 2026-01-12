@@ -55,3 +55,5 @@ class ReviewResponse(ReviewBase):
 class LocationWithReviews(LocationResponse):
     """Schema for Location with its reviews."""
     reviews: list[ReviewResponse] = []
+
+

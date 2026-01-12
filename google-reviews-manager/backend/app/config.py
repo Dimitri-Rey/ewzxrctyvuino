@@ -33,3 +33,5 @@ class Settings:
     DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
 
 settings = Settings()
+
+

@@ -157,3 +157,5 @@ def get_template_engine() -> TemplateEngine:
     if _template_engine is None:
         _template_engine = TemplateEngine()
     return _template_engine
+
+

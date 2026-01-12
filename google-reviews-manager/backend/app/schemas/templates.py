@@ -57,3 +57,5 @@ class TemplatePreviewResponse(BaseModel):
     rendered_content: str
     variables_used: list[str]
     is_valid: bool
+
+

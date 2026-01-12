@@ -78,3 +78,5 @@ echo "   Voir les logs: $DOCKER_COMPOSE logs -f"
 echo "   Arrêter: $DOCKER_COMPOSE down"
 echo "   Redémarrer: $DOCKER_COMPOSE restart"
 echo ""
+
+

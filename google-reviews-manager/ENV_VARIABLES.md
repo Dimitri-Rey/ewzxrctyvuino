@@ -61,3 +61,5 @@ Pour obtenir les identifiants OAuth :
 5. Configurez l'écran de consentement OAuth
 6. Ajoutez `http://localhost:8000/auth/callback` dans les URI de redirection autorisés
 7. Copiez le `Client ID` et le `Client Secret` dans votre fichier `.env`
+
+

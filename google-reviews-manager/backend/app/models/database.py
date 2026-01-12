@@ -14,10 +14,26 @@ if db_url.startswith("sqlite:///"):
     db_path = db_url.replace("sqlite:///", "")
     # Ensure data directory exists
     import os
-    os.makedirs("./data", exist_ok=True)
-    # Use absolute path for better compatibility
+    # Get absolute path for data directory
+    data_dir = os.path.abspath("./data")
+    os.makedirs(data_dir, exist_ok=True)
+    # Ensure the directory has write permissions
+    os.chmod(data_dir, 0o755)
+    
+    # If path is relative, make it absolute
     if not os.path.isabs(db_path):
-        db_path = os.path.join("./data", db_path)
+        # Extract just the filename if it includes a directory
+        if "/" in db_path or "\\" in db_path:
+            filename = os.path.basename(db_path)
+            db_path = os.path.join(data_dir, filename)
+        else:
+            db_path = os.path.join(data_dir, db_path)
+    else:
+        # If absolute, ensure parent directory exists
+        parent_dir = os.path.dirname(db_path)
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
+    
     db_url = f"sqlite:///{db_path}"
 
 engine = create_engine(
@@ -124,8 +140,18 @@ def init_db():
     import os
     # Create data directory if using SQLite
     if "sqlite" in settings.DATABASE_URL:
-        os.makedirs("./data", exist_ok=True)
-    Base.metadata.create_all(bind=engine)
+        data_dir = os.path.abspath("./data")
+        os.makedirs(data_dir, exist_ok=True)
+        os.chmod(data_dir, 0o755)
+    
+    # Create all tables
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error creating database tables: {e}")
+        raise
     
     # Create default templates
     _create_default_templates()
@@ -201,3 +227,5 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
